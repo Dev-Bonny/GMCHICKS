@@ -16,6 +16,7 @@ const visitRoutes = require('./src/routes/visits.js');
 const vaccinationRoutes = require('./src/routes/vaccinations.js');
 const adminRoutes = require('./src/routes/admin.js');
 const userRoutes = require('./src/routes/users.js');
+const seedRoute = require('./src/routes/seed.js');
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use('/api/visits', visitRoutes);
 app.use('/api/vaccinations', vaccinationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/seed', seedRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
