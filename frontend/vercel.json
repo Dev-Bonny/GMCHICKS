@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://gmchicks.vercel.app/api/$1"
+      "destination": "https://gmchicks.onrender.com/api/$1"
     }
   ]
 }
