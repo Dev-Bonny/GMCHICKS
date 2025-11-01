@@ -1,8 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+// frontend/vite.config.js
 
-export default defineConfig({
+const { defineConfig } = require('vite');
+const react = require('@vitejs/plugin-react');
+
+module.exports = defineConfig({
   plugins: [react()],
+  base: '/', // This is correct from your old file
+  build: {    // This is correct from your old file
+    outDir: 'dist',
+  },
+  // The server.proxy is for development only, it has no effect on Vercel
+  // But we leave it here for your local 'npm run dev'
   server: {
     port: 3000,
     proxy: {
@@ -12,4 +20,4 @@ export default defineConfig({
       }
     }
   }
-})
+});
