@@ -40,7 +40,12 @@ export default function () {
   let productsRes = http.get(`${BASE_URL}/api/products?page=1&limit=12`);
   check(productsRes, {
     'get products status is 200': (r) => r.status === 200,
-    'products returned': (r) => JSON.parse(r.body).products.length > 0,
+    
+    // --- FIX ---
+    // We use r.json('products') to safely parse the body and get the 'products' key.
+    // This will not crash if the body is not JSON or if the 'products' key is missing.
+    // We also re-check r.status === 200 to ensure this check only passes if the status is good.
+    'products returned': (r) => r.status === 200 && r.json('products') && r.json('products').length > 0,
   }) || errorRate.add(1);
 
   sleep(1);
@@ -87,15 +92,20 @@ export default function () {
     registerParams
   );
 
+  // --- FIX ---
+  // We run the check *first* to log all successes and failures.
+  // Then, we *separately* check the status to get the token.
+  // Your old code only checked successes, hiding all registration errors.
+  
   let token = null;
+  check(registerRes, {
+    'registration successful': (r) => r.status === 201,
+    'token received': (r) => r.status === 201 && r.json('token'),
+  }) || errorRate.add(1);
+
+  // Now, *after* checking, we get the token for the next step
   if (registerRes.status === 201) {
-    const body = JSON.parse(registerRes.body);
-    token = body.token;
-    
-    check(registerRes, {
-      'registration successful': (r) => r.status === 201,
-      'token received': () => token !== null,
-    }) || errorRate.add(1);
+    token = registerRes.json('token');
   }
 
   sleep(1);
@@ -104,8 +114,8 @@ export default function () {
   if (token) {
     // First, get a product ID
     let productsForOrder = http.get(`${BASE_URL}/api/products?limit=1`);
-    if (productsForOrder.status === 200) {
-      const products = JSON.parse(productsForOrder.body).products;
+    if (productsForOrder.status === 200 && productsForOrder.json('products')) {
+      const products = productsForOrder.json('products');
       if (products.length > 0) {
         const productId = products[0]._id;
 
