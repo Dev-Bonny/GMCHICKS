@@ -1,6 +1,6 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { FiPackage, FiDollarSign, FiUsers, FiCalendar } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
@@ -14,7 +14,7 @@ function AdminHome() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('/api/admin/dashboard');
+      const res = await api.get('/api/admin/dashboard');
       setStats(res.data.statistics);
     } catch (error) {
       console.error('Error fetching stats:', error);

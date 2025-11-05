@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiCheck } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/products?limit=6')
+    api.get('/api/products?limit=6')
       .then(res => setFeaturedProducts(res.data.products))
       .catch(err => console.error(err));
   }, []);

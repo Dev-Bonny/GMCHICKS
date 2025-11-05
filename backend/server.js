@@ -105,3 +105,14 @@ process.on('unhandledRejection', (err) => {
 });
 
 module.exports = app;
+
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'https://gmchicks.vercel.app',
+    /\.vercel\.app$/ // This allows all Vercel preview deployments
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));

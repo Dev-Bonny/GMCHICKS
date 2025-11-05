@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-toastify';
 
 export default function Checkout() {
@@ -27,7 +27,7 @@ export default function Checkout() {
 
     try {
       // Create order
-      const orderRes = await axios.post('/api/orders', {
+      const orderRes = await api.post('/api/orders', {
         items: cart.map(item => ({
           product: item._id,
           quantity: item.quantity
@@ -39,7 +39,7 @@ export default function Checkout() {
       const order = orderRes.data.order;
 
       // Initiate payment
-      const paymentRes = await axios.post('/api/payments/initiate', {
+      const paymentRes = await api.post('/api/payments/initiate', {
         orderId: order._id,
         phoneNumber: formData.phoneNumber
       });

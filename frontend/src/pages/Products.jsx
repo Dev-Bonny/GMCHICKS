@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import { FiSearch } from 'react-icons/fi';
 
@@ -28,7 +28,7 @@ export default function Products() {
       params.append('page', filters.page);
       params.append('limit', '12');
 
-      const res = await axios.get(`/api/products?${params.toString()}`);
+      const res = await api.get(`/api/products?${params.toString()}`);
       setProducts(res.data.products);
       setPagination({
         currentPage: res.data.currentPage,

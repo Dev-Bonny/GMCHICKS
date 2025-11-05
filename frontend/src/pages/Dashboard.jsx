@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { FiPackage, FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 
@@ -17,8 +17,8 @@ export default function Dashboard() {
   const fetchData = async () => {
     try {
       const [ordersRes, visitsRes] = await Promise.all([
-        axios.get('/api/orders'),
-        axios.get('/api/visits')
+        api.get('/api/orders'),
+        api.get('/api/visits')
       ]);
       setOrders(ordersRes.data.orders);
       setVisits(visitsRes.data.visits);

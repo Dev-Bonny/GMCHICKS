@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ export default function FarmVisit() {
   const checkAvailability = async (date) => {
     if (!date) return;
     try {
-      const res = await axios.get(`/api/visits/availability/${date}`);
+      const res = await api.get(`/api/visits/availability/${date}`);
       setAvailability(res.data);
     } catch (error) {
       console.error('Error checking availability:', error);
@@ -45,7 +45,7 @@ export default function FarmVisit() {
     setLoading(true);
 
     try {
-      await axios.post('/api/visits', formData);
+      await api.post('/api/visits', formData);
       toast.success('Visit scheduled successfully! We will send you a confirmation.');
       setFormData({
         visitDate: '',

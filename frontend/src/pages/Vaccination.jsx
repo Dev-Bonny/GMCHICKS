@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { FiCalendar, FiInfo } from 'react-icons/fi';
 
 export default function Vaccination() {
@@ -22,7 +22,7 @@ export default function Vaccination() {
 
   const fetchSchedule = async () => {
     try {
-      const res = await axios.get(`/api/vaccinations/schedule?chickType=${chickType}`);
+      const res = await api.get(`/api/vaccinations/schedule?chickType=${chickType}`);
       setSchedule(res.data.schedule);
     } catch (error) {
       console.error('Error fetching schedule:', error);
@@ -31,7 +31,7 @@ export default function Vaccination() {
 
   const fetchTips = async () => {
     try {
-      const res = await axios.get('/api/vaccinations/tips');
+      const res = await api.get('/api/vaccinations/tips');
       setTips(res.data.tips);
     } catch (error) {
       console.error('Error fetching tips:', error);
@@ -40,7 +40,7 @@ export default function Vaccination() {
 
   const fetchUpcoming = async () => {
     try {
-      const res = await axios.get(`/api/vaccinations/upcoming?chickAge=${chickAge}&chickType=${chickType}`);
+      const res = await api.get(`/api/vaccinations/upcoming?chickAge=${chickAge}&chickType=${chickType}`);
       setUpcomingVaccinations(res.data.upcomingVaccinations);
     } catch (error) {
       console.error('Error fetching upcoming:', error);

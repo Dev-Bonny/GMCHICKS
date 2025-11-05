@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import { FiShoppingCart, FiCheck } from 'react-icons/fi';
 
@@ -17,7 +17,7 @@ export default function ProductDetail() {
 
   const fetchProduct = async () => {
     try {
-      const res = await axios.get(`/api/products/${id}`);
+      const res = await api.get(`/api/products/${id}`);
       setProduct(res.data.product);
     } catch (error) {
       console.error('Error fetching product:', error);
