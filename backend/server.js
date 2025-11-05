@@ -22,10 +22,36 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// --- THIS IS THE CORRECT, COMBINED CORS CONFIGURATION ---
+// We define all allowed URLs in an array.
+const allowedOrigins = [
+  'http://localhost:3000',       // For your local testing
+  'https://gmchicks.vercel.app', // Your main production domain
+  /\.vercel\.app$/               // This REGEX allows all Vercel preview domains
+];
+
+// If you still have a FRONTEND_URL in Render, this will add it too.
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
+  origin: function (origin, callback) {
+    // This function checks if the request origin is in our allowlist.
+    // !origin is added to allow tools like Postman (which have no origin).
+    if (!origin || allowedOrigins.some(o => o instanceof RegExp ? o.test(origin) : o === origin)) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error('This origin is not allowed by CORS')); // Block the request
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+// --- END OF CORS CONFIGURATION ---
+
 
 // Rate limiting
 const limiter = rateLimit({
@@ -56,10 +82,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV
   });
 });
 
@@ -106,13 +132,4 @@ process.on('unhandledRejection', (err) => {
 
 module.exports = app;
 
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    'https://gmchicks.vercel.app',
-    /\.vercel\.app$/ // This allows all Vercel preview deployments
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// --- DO NOT PUT ANY CODE AFTER THIS LINE ---
