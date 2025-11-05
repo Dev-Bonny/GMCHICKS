@@ -1,13 +1,35 @@
 import { Link } from 'react-router-dom';
-import { FiShoppingCart, FiUser, FiMenu, FiX } from 'react-icons/fi';
-import { useState } from 'react';
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { useState, useRef, useEffect } from 'react'; // Add useRef and useEffect
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // Add this
+  const profileRef = useRef(null); // Add this
+  
   const { user, logout, isAuthenticated } = useAuth();
   const { getCartCount } = useCart();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+  };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -38,18 +60,42 @@ export default function Navbar() {
             </Link>
 
             {isAuthenticated ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 hover:text-primary-600">
+              <div className="relative" ref={profileRef}>
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center space-x-2 hover:text-primary-600 focus:outline-none"
+                >
                   <FiUser size={24} />
                   <span>{user?.name}</span>
+                  <FiChevronDown size={16} className={`transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block">
-                  <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">Dashboard</Link>
-                  {user?.role === 'admin' && (
-                    <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">Admin Panel</Link>
-                  )}
-                  <button onClick={logout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
-                </div>
+                
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <Link 
+                      to="/dashboard" 
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    {user?.role === 'admin' && (
+                      <Link 
+                        to="/admin" 
+                        className="block px-4 py-2 hover:bg-gray-100 text-primary-600 font-semibold"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
+                    <button 
+                      onClick={handleLogout} 
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link to="/login" className="btn-primary">Login</Link>
@@ -78,9 +124,9 @@ export default function Navbar() {
             <>
               <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-50">Dashboard</Link>
               {user?.role === 'admin' && (
-                <Link to="/admin" className="block px-4 py-2 hover:bg-gray-50">Admin Panel</Link>
+                <Link to="/admin" className="block px-4 py-2 hover:bg-gray-50 text-primary-600 font-semibold">Admin Panel</Link>
               )}
-              <button onClick={logout} className="block w-full text-left px-4 py-2 hover:bg-gray-50">Logout</button>
+              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600">Logout</button>
             </>
           ) : (
             <Link to="/login" className="block px-4 py-2 hover:bg-gray-50">Login</Link>
