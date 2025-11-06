@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { FiPackage, FiDollarSign, FiUsers, FiCalendar } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import AdminProducts from './AdminProducts';
 
 function AdminHome() {
   const [stats, setStats] = useState(null);
@@ -120,7 +121,7 @@ export default function AdminDashboard() {
       <div className="flex-1 p-8">
         <Routes>
           <Route index element={<AdminHome />} />
-          <Route path="products" element={<div>Products Management (Coming Soon)</div>} />
+          <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<div>Orders Management (Coming Soon)</div>} />
           <Route path="visits" element={<div>Visits Management (Coming Soon)</div>} />
         </Routes>
