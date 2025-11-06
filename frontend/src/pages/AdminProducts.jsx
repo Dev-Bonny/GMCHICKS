@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { toast } from 'react-toastify';
-import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiPlus, FiX, FiUpload } from 'react-icons/fi';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -47,6 +48,62 @@ export default function AdminProducts() {
     const newImages = [...formData.images];
     newImages[index][field] = value;
     setFormData({ ...formData, images: newImages });
+  };
+
+  // NEW: Handle file upload
+  const handleFileUpload = async (index, file) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    setUploadingImages(true);
+
+    try {
+      // Create FormData for file upload
+      const formDataUpload = new FormData();
+      formDataUpload.append('image', file);
+
+      // Upload to your backend
+      // Adjust the endpoint to match your backend API
+      const response = await api.post('/api/upload/image', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Update the image URL in the form
+      const newImages = [...formData.images];
+      newImages[index].url = response.data.url; // Adjust based on your API response
+      newImages[index].alt = file.name.split('.')[0]; // Use filename as default alt text
+      
+      setFormData({ ...formData, images: newImages });
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image. You can paste an image URL instead.');
+      
+      // Fallback: Convert to base64 for preview (not recommended for production)
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newImages = [...formData.images];
+        newImages[index].url = reader.result;
+        newImages[index].alt = file.name.split('.')[0];
+        setFormData({ ...formData, images: newImages });
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   const addImageField = () => {
@@ -112,11 +169,9 @@ export default function AdminProducts() {
 
     try {
       if (editingProduct) {
-        // Update existing product
         await api.put(`/api/products/${editingProduct._id}`, productData);
         toast.success('Product updated successfully!');
       } else {
-        // Create new product
         await api.post('/api/products', productData);
         toast.success('Product created successfully!');
       }
@@ -368,47 +423,97 @@ export default function AdminProducts() {
                   />
                 </div>
 
+                {/* IMPROVED IMAGE UPLOAD SECTION */}
                 <div className="col-span-2">
                   <label className="block text-sm font-medium mb-2">Product Images</label>
                   {formData.images.map((image, index) => (
-                    <div key={index} className="flex space-x-2 mb-2">
-                      <input
-                        type="url"
-                        value={image.url}
-                        onChange={(e) => handleImageChange(index, 'url', e.target.value)}
-                        className="input-field flex-1"
-                        placeholder="Image URL"
-                      />
-                      <input
-                        type="text"
-                        value={image.alt}
-                        onChange={(e) => handleImageChange(index, 'alt', e.target.value)}
-                        className="input-field w-32"
-                        placeholder="Alt text"
-                      />
-                      {formData.images.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeImageField(index)}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <FiX size={20} />
-                        </button>
-                      )}
+                    <div key={index} className="mb-4 p-4 border rounded-lg bg-gray-50">
+                      <div className="flex items-start space-x-3">
+                        {/* Image Preview */}
+                        {image.url && (
+                          <div className="flex-shrink-0">
+                            <img 
+                              src={image.url} 
+                              alt={image.alt || 'Preview'} 
+                              className="w-20 h-20 object-cover rounded border"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/80?text=Invalid+URL';
+                              }}
+                            />
+                          </div>
+                        )}
+                        
+                        <div className="flex-1 space-y-2">
+                          {/* File Upload Button */}
+                          <div>
+                            <label className="flex items-center justify-center w-full px-4 py-2 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition">
+                              <FiUpload className="mr-2" />
+                              <span className="text-sm">
+                                {uploadingImages ? 'Uploading...' : 'Upload Image'}
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleFileUpload(index, e.target.files[0])}
+                                className="hidden"
+                                disabled={uploadingImages}
+                              />
+                            </label>
+                          </div>
+
+                          {/* OR divider */}
+                          <div className="text-center text-xs text-gray-500">OR paste URL</div>
+
+                          {/* URL Input */}
+                          <input
+                            type="url"
+                            value={image.url}
+                            onChange={(e) => handleImageChange(index, 'url', e.target.value)}
+                            className="input-field w-full"
+                            placeholder="https://example.com/image.jpg"
+                          />
+
+                          {/* Alt Text */}
+                          <input
+                            type="text"
+                            value={image.alt}
+                            onChange={(e) => handleImageChange(index, 'alt', e.target.value)}
+                            className="input-field w-full"
+                            placeholder="Alt text (for accessibility)"
+                          />
+                        </div>
+
+                        {/* Remove Button */}
+                        {formData.images.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeImageField(index)}
+                            className="text-red-600 hover:text-red-800 flex-shrink-0"
+                          >
+                            <FiX size={20} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
+                  
                   <button
                     type="button"
                     onClick={addImageField}
-                    className="text-primary-600 text-sm hover:underline"
+                    className="text-primary-600 text-sm hover:underline flex items-center"
                   >
-                    + Add another image
+                    <FiPlus className="mr-1" size={16} />
+                    Add another image
                   </button>
                 </div>
               </div>
 
               <div className="mt-6 flex space-x-4">
-                <button type="submit" className="btn-primary flex-1">
+                <button 
+                  type="submit" 
+                  className="btn-primary flex-1"
+                  disabled={uploadingImages}
+                >
                   {editingProduct ? 'Update Product' : 'Create Product'}
                 </button>
                 <button
