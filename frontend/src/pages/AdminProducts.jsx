@@ -50,6 +50,46 @@ export default function AdminProducts() {
     setFormData({ ...formData, images: newImages });
   };
 
+  // NEW: Compress and resize image
+  const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Resize if image is too large
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to blob with compression
+          canvas.toBlob(
+            (blob) => {
+              resolve(blob);
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
   // NEW: Handle file upload
   const handleFileUpload = async (index, file) => {
     if (!file) return;
@@ -60,18 +100,21 @@ export default function AdminProducts() {
       return;
     }
 
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
+    // Validate file size (10MB max for original)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size should be less than 10MB');
       return;
     }
 
     setUploadingImages(true);
 
     try {
+      // Compress the image
+      const compressedBlob = await compressImage(file);
+      
       // Create FormData for file upload
       const formDataUpload = new FormData();
-      formDataUpload.append('image', file);
+      formDataUpload.append('image', compressedBlob, file.name);
 
       // Upload to your backend
       // Adjust the endpoint to match your backend API
@@ -90,17 +133,29 @@ export default function AdminProducts() {
       toast.success('Image uploaded successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image. You can paste an image URL instead.');
       
-      // Fallback: Convert to base64 for preview (not recommended for production)
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const newImages = [...formData.images];
-        newImages[index].url = reader.result;
-        newImages[index].alt = file.name.split('.')[0];
-        setFormData({ ...formData, images: newImages });
-      };
-      reader.readAsDataURL(file);
+      // Check if it's a file upload endpoint issue
+      if (error.response?.status === 404) {
+        toast.error('Upload endpoint not configured. Using URL input instead.');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to upload image. Try using an image URL instead.');
+      }
+      
+      // Fallback: Convert to compressed base64 for preview
+      try {
+        const compressedBlob = await compressImage(file, 800, 0.7);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const newImages = [...formData.images];
+          newImages[index].url = reader.result;
+          newImages[index].alt = file.name.split('.')[0];
+          setFormData({ ...formData, images: newImages });
+          toast.info('Image compressed and added (consider using image URL for better performance)');
+        };
+        reader.readAsDataURL(compressedBlob);
+      } catch (compressError) {
+        console.error('Compression failed:', compressError);
+      }
     } finally {
       setUploadingImages(false);
     }
