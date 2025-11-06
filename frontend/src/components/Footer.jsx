@@ -36,15 +36,15 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-center text-gray-400">
                 <FiPhone className="mr-2" />
-                <span>+254 700 123 456</span>
+                <span>+254 792 531 105</span>
               </li>
               <li className="flex items-center text-gray-400">
                 <FiMail className="mr-2" />
-                <span>info@gmchicks.com</span>
+                <span>kangangibonface2021@gmail.com</span>
               </li>
               <li className="flex items-start text-gray-400">
                 <FiMapPin className="mr-2 mt-1" />
-                <span>Nairobi, Kenya</span>
+                <span>Eldoret, Kenya</span>
               </li>
             </ul>
           </div>
