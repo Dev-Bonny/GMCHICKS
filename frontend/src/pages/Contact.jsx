@@ -17,8 +17,8 @@ export default function Contact() {
               <FiPhone className="text-primary-500 text-2xl mr-4 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Phone</h3>
-                <p className="text-gray-600">+254 700 123 456</p>
-                <p className="text-gray-600">+254 720 987 654</p>
+                <p className="text-gray-600">+254 792 531 105</p>
+                <p className="text-gray-600">+254 722 395 449</p>
               </div>
             </div>
 
@@ -26,8 +26,8 @@ export default function Contact() {
               <FiMail className="text-primary-500 text-2xl mr-4 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Email</h3>
-                <p className="text-gray-600">info@gmchicks.com</p>
-                <p className="text-gray-600">sales@gmchicks.com</p>
+                <p className="text-gray-600">kangangibonface2021@gmail.com</p>
+                <p className="text-gray-600">kangangiboniface2021@gmail.com</p>
               </div>
             </div>
 
@@ -35,7 +35,7 @@ export default function Contact() {
               <FiMapPin className="text-primary-500 text-2xl mr-4 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Location</h3>
-                <p className="text-gray-600">Nairobi, Kenya</p>
+                <p className="text-gray-600">Eldoret, Kenya</p>
                 <p className="text-gray-600">Open: Mon-Sat, 9:00 AM - 5:00 PM</p>
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function Contact() {
               <div>
                 <h3 className="font-semibold mb-1">WhatsApp</h3>
                 <a 
-                  href="https://wa.me/254700123456" 
+                  href="https://wa.me/254792531105" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-primary-600 hover:underline"
