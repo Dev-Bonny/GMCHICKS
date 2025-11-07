@@ -106,7 +106,7 @@ export default function FarmVisit() {
             <p className="text-gray-700 mb-4">
               📍 Nairobi, Kenya<br />
               ⏰ Open: Monday - Saturday, 9:00 AM - 5:00 PM<br />
-              📞 Phone: +254 700 123 456
+              📞 Phone: +254 792 531 105
             </p>
             <div className="bg-gray-300 h-48 rounded-lg flex items-center justify-center">
               <p className="text-gray-600">[Map Integration Here]</p>
