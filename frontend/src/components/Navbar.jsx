@@ -10,7 +10,7 @@ export default function Navbar() {
   const profileRef = useRef(null); // Add this
   
   const { user, logout, isAuthenticated } = useAuth();
-  const { getCartCount } = useCart();
+  const { getCartCount, clearCart } = useCart();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,6 +28,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    clearCart();
     setIsProfileOpen(false);
   };
 
