@@ -91,6 +91,12 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    const populatedUser = await User.findById(user._id)
+      .populate({
+        path: 'cart.product',
+        model: 'Product' // Make sure this matches your Product model name
+      });
+
     // Generate token
     const token = generateToken(user._id);
 
@@ -102,9 +108,11 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role
-      }
+        role: user.role,
+        cart: populatedUser.cart
+        }
     });
+
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
@@ -119,7 +127,11 @@ router.post('/login', async (req, res) => {
 // @access  Private
 router.get('/me', protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: 'cart.product',
+        model: 'Product' // Make sure this matches your Product model name
+      });
     
     res.json({
       success: true,
@@ -130,7 +142,8 @@ router.get('/me', protect, async (req, res) => {
         phone: user.phone,
         role: user.role,
         address: user.address,
-        vaccinationReminders: user.vaccinationReminders
+        vaccinationReminders: user.vaccinationReminders,
+        cart: user.cart
       }
     });
   } catch (error) {

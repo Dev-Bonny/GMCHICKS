@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+const cartItemSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product', // IMPORTANT: Assumes your product model is named 'Product'
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+    default: 1
+  }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -36,6 +50,9 @@ const userSchema = new mongoose.Schema({
     county: String,
     postalCode: String
   },
+
+  cart: [cartItemSchema],
+  
   vaccinationReminders: {
     type: Boolean,
     default: false
