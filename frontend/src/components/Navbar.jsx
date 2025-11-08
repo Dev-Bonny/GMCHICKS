@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FiShoppingCart, FiUser, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react'; // Add useRef and useEffect
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,7 @@ export default function Navbar() {
   const profileRef = useRef(null); // Add this
   
   const { user, logout, isAuthenticated } = useAuth();
-  const { getCartCount, clearCart } = useCart();
+  const { getCartCount} = useCart();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    clearCart();
     setIsProfileOpen(false);
   };
 
@@ -45,11 +44,56 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="hover:text-primary-600 transition">Products</Link>
-            <Link to="/farm-visit" className="hover:text-primary-600 transition">Farm Visit</Link>
-            <Link to="/vaccination" className="hover:text-primary-600 transition">Vaccination</Link>
-            <Link to="/learn" className="hover:text-primary-600 transition">Learn</Link>
-            <Link to="/contact" className="hover:text-primary-600 transition">Contact</Link>
+            <NavLink 
+    to="/products" 
+    className={({ isActive }) => 
+      isActive 
+        ? 'text-primary-600 font-bold transition'
+        : 'hover:text-primary-600 transition'
+    }
+  >
+    Products
+  </NavLink>
+  <NavLink 
+    to="/farm-visit" 
+    className={({ isActive }) => 
+      isActive 
+        ? 'text-primary-600 font-bold transition'
+        : 'hover:text-primary-600 transition'
+    }
+  >
+    Farm Visit
+  </NavLink>
+  <NavLink 
+    to="/vaccination" 
+    className={({ isActive }) => 
+      isActive 
+        ? 'text-primary-600 font-bold transition'
+        : 'hover:text-primary-600 transition'
+    }
+  >
+    Vaccination
+  </NavLink>
+  <NavLink 
+    to="/learn" 
+    className={({ isActive }) => 
+      isActive 
+        ? 'text-primary-600 font-bold transition'
+        : 'hover:text-primary-600 transition'
+    }
+  >
+    Learn
+  </NavLink>
+  <NavLink 
+    to="/contact" 
+    className={({ isActive }) => 
+      isActive 
+        ? 'text-primary-600 font-bold transition'
+        : 'hover:text-primary-600 transition'
+    }
+  >
+    Contact
+  </NavLink>
             
             <Link to="/cart" className="relative hover:text-primary-600 transition">
               <FiShoppingCart size={24} />
