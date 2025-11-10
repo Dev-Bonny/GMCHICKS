@@ -29,6 +29,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     setIsProfileOpen(false);
+    setIsOpen(false);
   };
 
   return (
@@ -157,27 +158,118 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t">
-          <Link to="/products" className="block px-4 py-2 hover:bg-gray-50">Products</Link>
-          <Link to="/farm-visit" className="block px-4 py-2 hover:bg-gray-50">Farm Visit</Link>
-          <Link to="/vaccination" className="block px-4 py-2 hover:bg-gray-50">Vaccination</Link>
-          <Link to="/learn" className="block px-4 py-2 hover:bg-gray-50">Learn</Link>
-          <Link to="/contact" className="block px-4 py-2 hover:bg-gray-50">Contact</Link>
-          <Link to="/cart" className="block px-4 py-2 hover:bg-gray-50">Cart ({getCartCount()})</Link>
+  {/* Mobile Menu - NEW SLIDE-IN VERSION */}
+      
+      {/* 1. Overlay */}
+      <div
+        // This overlay dims the background. Clicking it closes the menu.
+        className={`
+          md:hidden fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity
+          ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+        `}
+        onClick={() => setIsOpen(false)}
+      ></div>
+
+      {/* 2. Menu Panel */}
+      <div
+        // This is the actual menu that slides in from the left.
+        className={`
+          md:hidden fixed top-0 left-0 h-full w-3/4 max-w-xs bg-white z-50
+          shadow-xl transform transition-transform ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        {/* We add an "X" button inside the panel now */}
+        <div className="flex justify-end p-4">
+          <button onClick={() => setIsOpen(false)} className="text-gray-700">
+            <FiX size={24} />
+          </button>
+        </div>
+        
+        {/* Your links, now inside the slide-in panel */}
+        <div className="flex flex-col space-y-1 p-4">
+          <Link 
+            to="/products" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Products
+          </Link>
+          <Link 
+            to="/farm-visit" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Farm Visit
+          </Link>
+          <Link 
+            to="/vaccination" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Vaccination
+          </Link>
+          <Link 
+            to="/learn" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Learn
+          </Link>
+          <Link 
+            to="/contact" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link 
+            to="/cart" 
+            className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+            onClick={() => setIsOpen(false)}
+          >
+            Cart ({getCartCount()})
+          </Link>
+
+          {/* Divider */}
+          <hr className="my-4" />
+
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-50">Dashboard</Link>
+              <Link 
+                to="/dashboard" 
+                className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
               {user?.role === 'admin' && (
-                <Link to="/admin" className="block px-4 py-2 hover:bg-gray-50 text-primary-600 font-semibold">Admin Panel</Link>
+                <Link 
+                  to="/admin" 
+                  className="block px-4 py-3 rounded-lg hover:bg-gray-50 text-primary-600 font-semibold" 
+                  onClick={() => setIsOpen(false)}
+                >
+                  Admin Panel
+                </Link>
               )}
-              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600">Logout</button>
+              <button 
+                onClick={handleLogout} 
+                className="block w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 text-red-600"
+              >
+                Logout
+              </button>
             </>
           ) : (
-            <Link to="/login" className="block px-4 py-2 hover:bg-gray-50">Login</Link>
+            <Link 
+              to="/login" 
+              className="block px-4 py-3 rounded-lg hover:bg-gray-50" 
+              onClick={() => setIsOpen(false)}
+            >
+              Login
+            </Link>
           )}
         </div>
-      )}
+      </div>
     </nav>
   );
 }
