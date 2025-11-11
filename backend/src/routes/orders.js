@@ -11,6 +11,10 @@ router.post('/', protect, async (req, res) => {
   try {
     const { items, deliveryAddress, notes } = req.body;
 
+    // ✅ Generate unique order number
+    const orderNumber = 'ORD-' + Date.now();
+
+    // ✅ Validate items
     if (!items || items.length === 0) {
       return res.status(400).json({
         success: false,
@@ -18,7 +22,7 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
-    // Validate products and calculate total
+    // ✅ Validate products and calculate total
     let totalAmount = 0;
     const orderItems = [];
 
@@ -51,8 +55,9 @@ router.post('/', protect, async (req, res) => {
       totalAmount += product.price * item.quantity;
     }
 
-    // Create order
+    // ✅ Create order (include orderNumber here)
     const order = await Order.create({
+      orderNumber,
       user: req.user._id,
       items: orderItems,
       totalAmount,
@@ -111,8 +116,11 @@ router.get('/:id', protect, async (req, res) => {
       });
     }
 
-    // Check authorization (user or admin)
-    if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    // ✅ Check authorization (user or admin)
+    if (
+      order.user._id.toString() !== req.user._id.toString() &&
+      req.user.role !== 'admin'
+    ) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized'
@@ -145,7 +153,7 @@ router.put('/:id/cancel', protect, async (req, res) => {
       });
     }
 
-    // Check authorization
+    // ✅ Check authorization
     if (order.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
@@ -153,7 +161,7 @@ router.put('/:id/cancel', protect, async (req, res) => {
       });
     }
 
-    // Can only cancel pending orders
+    // ✅ Can only cancel pending orders
     if (order.orderStatus !== 'pending') {
       return res.status(400).json({
         success: false,
