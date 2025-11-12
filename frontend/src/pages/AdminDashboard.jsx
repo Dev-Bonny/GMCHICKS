@@ -2,8 +2,9 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { FiPackage, FiDollarSign, FiUsers, FiCalendar } from 'react-icons/fi';
-import { toast } from 'react-toastify';
 import AdminProducts from './AdminProducts';
+import AdminOrders from './AdminOrders';
+import AdminVisits from './AdminVisits';
 
 function AdminHome() {
   const [stats, setStats] = useState(null);
@@ -24,7 +25,13 @@ function AdminHome() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -36,7 +43,7 @@ function AdminHome() {
               <p className="text-gray-600 text-sm">Total Orders</p>
               <p className="text-3xl font-bold">{stats?.totalOrders || 0}</p>
             </div>
-            <FiPackage className="text-4xl text-primary-500" />
+            <FiPackage className="text-4xl text-amber-500" />
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -79,13 +86,15 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-md">
         <div className="p-6">
-          <h2 className="text-xl font-bold">Admin Panel</h2>
+          <h2 className="text-xl font-bold text-amber-600">Admin Panel</h2>
         </div>
         <nav className="space-y-1">
           <Link
             to="/admin"
             className={`block px-6 py-3 ${
-              location.pathname === '/admin' ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : 'hover:bg-gray-50'
+              location.pathname === '/admin' 
+                ? 'bg-amber-50 text-amber-600 border-r-4 border-amber-600' 
+                : 'hover:bg-gray-50 text-gray-700'
             }`}
           >
             Dashboard
@@ -93,7 +102,9 @@ export default function AdminDashboard() {
           <Link
             to="/admin/products"
             className={`block px-6 py-3 ${
-              location.pathname.includes('/admin/products') ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : 'hover:bg-gray-50'
+              location.pathname.includes('/admin/products') 
+                ? 'bg-amber-50 text-amber-600 border-r-4 border-amber-600' 
+                : 'hover:bg-gray-50 text-gray-700'
             }`}
           >
             Products
@@ -101,7 +112,9 @@ export default function AdminDashboard() {
           <Link
             to="/admin/orders"
             className={`block px-6 py-3 ${
-              location.pathname.includes('/admin/orders') ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : 'hover:bg-gray-50'
+              location.pathname.includes('/admin/orders') 
+                ? 'bg-amber-50 text-amber-600 border-r-4 border-amber-600' 
+                : 'hover:bg-gray-50 text-gray-700'
             }`}
           >
             Orders
@@ -109,7 +122,9 @@ export default function AdminDashboard() {
           <Link
             to="/admin/visits"
             className={`block px-6 py-3 ${
-              location.pathname.includes('/admin/visits') ? 'bg-primary-50 text-primary-600 border-r-4 border-primary-600' : 'hover:bg-gray-50'
+              location.pathname.includes('/admin/visits') 
+                ? 'bg-amber-50 text-amber-600 border-r-4 border-amber-600' 
+                : 'hover:bg-gray-50 text-gray-700'
             }`}
           >
             Farm Visits
@@ -122,8 +137,8 @@ export default function AdminDashboard() {
         <Routes>
           <Route index element={<AdminHome />} />
           <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<div>Orders Management (Coming Soon)</div>} />
-          <Route path="visits" element={<div>Visits Management (Coming Soon)</div>} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="visits" element={<AdminVisits />} />
         </Routes>
       </div>
     </div>
