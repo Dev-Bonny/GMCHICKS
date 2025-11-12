@@ -33,7 +33,7 @@ export default function AdminVisits() {
   const updateVisitStatus = async (visitId, newStatus) => {
     try {
       setUpdating(true);
-      await api.put(`/api/admin/visits/${visitId}`, { status: newStatus });
+      await api.put(`/api/admin/visits/${visitId}/status`, { status: newStatus });
       
       setVisits(visits.map(visit => 
         visit._id === visitId ? { ...visit, status: newStatus } : visit

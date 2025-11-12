@@ -32,7 +32,7 @@ export default function AdminOrders() {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       setUpdating(true);
-      await api.put(`/api/admin/orders/${orderId}`, { orderStatus: newStatus });
+      await api.put(`/api/admin/orders/${orderId}/status`, { status: newStatus });
       
       // Update local state
       setOrders(orders.map(order => 
